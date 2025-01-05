@@ -1,0 +1,93 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 80%;
+    max-width: 1000px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Left Side: App Name */
+.app-name {
+    flex: 1;
+    background-color: #e7d6c4; /* Light brown */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #5a4a42;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Right Side: Login Form */
+.login-form {
+    flex: 1;
+    padding: 30px;
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    color: #5a4a42;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333333;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #e7d6c4; /* Light brown */
+    color: #5a4a42;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+    background-color: #d6c4b3; /* Slightly darker brown */
+}
+
+.login-form .new-account {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #5a4a42;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.login-form .new-account:hover {
+    text-decoration: underline;
+}
