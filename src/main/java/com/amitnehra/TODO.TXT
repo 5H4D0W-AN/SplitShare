@@ -5,7 +5,7 @@
 5. security and admin accounts for restricting accounts
 6. Send messages on creating transactions in ledger and settling pending Transactions.
 7. blocked after some reject count of requests
-8. preview of photo selected on creating account.
+8. preview of photo selected on creating account or editing profile.
 9. More friend suggestions on clicking more and based on location and interaction on platform(ML) // now limited to 10
 10. page should refresh on coming back to it
 11. Should be able to handle concurrent requests for a resource.
@@ -13,10 +13,17 @@
 13. delete account / deactivate
 14. show suggestions in friends page also at last
 15. Web socket configuration - setAllowedOrigins
+16. Make a microservice for messenger using new tech. support for sophisticated options like voice, images, audioMessages.
 
 
 
 # Microservices (for REST apis: service to service interaction)
         redis for GLOBAL CACHING // can we do @cacheable for multiple sessions
 
-DTO (if possible)
+
+
+
+PROBLEMS ENCOUNTERED AND CONQUERED:
+1. message Service autowiring in ChatEndPoint because @ServerEndPoint not maintained by Spring but javax, so manually
+   refered to context bean
+2. handling multipart file and photo storage upto 10MB

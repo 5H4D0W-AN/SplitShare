@@ -1,0 +1,165 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.messenger-container {
+    display: flex;
+    height: 100vh;
+}
+
+.friends-list {
+    width: 25%;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.friends-list h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.friends-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.friends-list li {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.friends-list li:hover {
+    background-color: #f0f0f0;
+}
+
+.friend-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+}
+
+.last-message-content {
+    font-size: 0.9rem;
+    color: #888;
+}
+.last-message-timestamp{
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.chat-header {
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+#messageInput {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 1rem;
+}
+
+button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.default-icon {
+    text-align: center;
+    margin-top: 20%;
+}
+
+.default-icon img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.default-icon p {
+    font-size: 1.2rem;
+    color: #888;
+}
+
+/* Common message styles */
+.message {
+    margin: 5px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+/* Sent message styles */
+.message.sent {
+    background-color: #d1f0ff;
+    color: #000;
+    align-self: flex-end;
+}
+
+/* Received message styles */
+.message.received {
+    background-color: #f0f0f0;
+    color: #000;
+    align-self: flex-start;
+}
+
+/* Chat messages container */
+#chatMessages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+

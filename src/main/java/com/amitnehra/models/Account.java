@@ -77,17 +77,6 @@ public class Account implements Comparable<Account> {
     }
 
     @Override
-    public String toString() {
-        return "Account{" +
-                "email='" + email + '\'' +
-                ", id='" + id + '\'' +
-                ", password='" + password + '\'' +
-                ", profile=" + profile +
-                ", mobile='" + mobile + '\'' +
-                '}';
-    }
-
-    @Override
     public int compareTo(Account o) {
         return this.profile.getName().compareTo(o.profile.getName());
     }

@@ -4,6 +4,7 @@ import com.amitnehra.models.enums.MessageStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,6 +21,7 @@ public class Message implements Comparable<Message> {
     @NotBlank
     private String content;
 
+    @NotNull
     private LocalDateTime timeStamp;
     @Enumerated
     private MessageStatus status;
@@ -68,20 +70,32 @@ public class Message implements Comparable<Message> {
         return timeStamp;
     }
 
-    public void setTimeStamp(LocalDateTime date) {
+    public void setTimeStamp(LocalDateTime timeStamp) {
         this.timeStamp = timeStamp;
     }
 
-    public Message(Long id, Account fromAccount, Account toAccount, String content, LocalDateTime date, MessageStatus status) {
+    public Message(Long id, Account fromAccount, Account toAccount, String content, LocalDateTime timeStamp, MessageStatus status) {
         this.id = id;
         this.fromAccount = fromAccount;
         this.toAccount = toAccount;
         this.content = content;
-        this.timeStamp = date;
+        this.timeStamp = timeStamp;
         this.status = status;
     }
 
     public Message() {
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", fromAccount=" + fromAccount +
+                ", toAccount=" + toAccount +
+                ", content='" + content + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", status=" + status +
+                '}';
     }
 
     @Override

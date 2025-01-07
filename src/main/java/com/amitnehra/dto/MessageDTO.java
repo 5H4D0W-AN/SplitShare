@@ -49,5 +49,14 @@ public class MessageDTO {
 
     public MessageDTO() {
     }
-    // Getters and Setters
+
+    @Override
+    public String toString() {
+        return "MessageDTO{" +
+                "senderId='" + senderId + '\'' +
+                ", receiverId='" + receiverId + '\'' +
+                ", content='" + content + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

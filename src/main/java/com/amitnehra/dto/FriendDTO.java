@@ -1,6 +1,7 @@
 package com.amitnehra.dto;
 
 import com.amitnehra.models.Account;
+import com.amitnehra.models.Message;
 
 import java.io.Serializable;
 import java.util.Base64;
@@ -10,6 +11,7 @@ public class FriendDTO implements Serializable {
     private String id;
     private String name;
     private String base64photo;
+    private Message lastMessage;
 
     public static FriendDTO getFromAccount(Account account) {
         FriendDTO friendDTO = new FriendDTO();
@@ -17,6 +19,14 @@ public class FriendDTO implements Serializable {
         friendDTO.setName(account.getProfile().getName());
         friendDTO.setBase64photo(Base64.getEncoder().encodeToString(account.getProfile().getPhotobytes()));
         return friendDTO;
+    }
+
+    public Message getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(Message lastMessage) {
+        this.lastMessage = lastMessage;
     }
 
     public String getId() {

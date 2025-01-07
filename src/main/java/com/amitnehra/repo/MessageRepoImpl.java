@@ -30,8 +30,10 @@ public class MessageRepoImpl implements MessageRepo {
     public List<Message> findBySenderAndReceiver(String receiverId, String senderId){
         try {
             Session session = getCurrentSession();
-            Query query = session.createNativeQuery("Select m from message where (m.fromaccount_id = :sender AND m.toaccount_id = :receiver)"+
-                    "(m.fromaccount_id = :receiver AND m.toaccount_id = :sender) ORDER BY m.timestamp ASC");
+            Query query = session.createNativeQuery("Select * from message where (fromaccount_id = :sender AND toaccount_id = :receiver)"+
+                    "OR (fromaccount_id = :receiver AND toaccount_id = :sender) ORDER BY timestamp DESC;", Message.class);
+            query.setParameter("sender", senderId);
+            query.setParameter("receiver", receiverId);
             return (List<Message>) query.getResultList();
         }catch(RuntimeException e){
             logger.error(e.getMessage());
@@ -49,6 +51,26 @@ public class MessageRepoImpl implements MessageRepo {
             logger.error("Error in save in AccountRepoImpl.");
             logger.error(e.getMessage());
             throw new MessagesException("Exception while saving message in database.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public Message getLastMessage(String id, String id1) {
+        try{
+            Session session = getCurrentSession();
+            String s = "Select * from message where (fromaccount_id = :ab AND toaccount_id = :ba) "+
+                    "OR (fromaccount_id = :ba AND toaccount_id = :ab) ORDER BY timestamp DESC LIMIT 2;";
+            Query query = session.createNativeQuery(s, Message.class);
+            query.setParameter("ab", id);
+            query.setParameter("ba", id1);
+            List<Message> list = query.getResultList();
+            return list.get(0);
+        }catch (IndexOutOfBoundsException e){
+            logger.error("No message found among two users in getLastMessage.");
+            return null;
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
     }
 }

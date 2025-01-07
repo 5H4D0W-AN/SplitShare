@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class MessageServiceImpl implements MessageService{
 
     @Override
     public void saveMessage(MessageDTO messageDTO) {
+        System.out.println("messageDTO passed to service to save in DB: "+messageDTO);
         Message message = new Message();
         Account fromAccount = accountRepo.findUser(messageDTO.getSenderId());
         Account toAccount = accountRepo.findUser(messageDTO.getReceiverId());
@@ -34,15 +36,24 @@ public class MessageServiceImpl implements MessageService{
         message.setFromAccount(fromAccount); // Assuming Account is your user entity
         message.setToAccount(toAccount);
         message.setContent(messageDTO.getContent());
-        message.setTimeStamp(LocalDateTime.now());
+        message.setTimeStamp(messageDTO.getTimestamp());
         message.setStatus(MessageStatus.SENT);
+        System.out.println("Message saved: "+message);
         messageRepository.save(message);
     }
 
     @Override
     public List<MessageDTO> getChatHistory(String senderId, String receiverId) {
         List<Message> messages = messageRepository.findBySenderAndReceiver(receiverId, senderId);
+        if(messages == null) {
+            return new ArrayList<>();
+        }
         return messages.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public Message getLastMessage(String id, String id1) {
+        return messageRepository.getLastMessage(id, id1);
     }
 
     private MessageDTO convertToDTO(Message message) {

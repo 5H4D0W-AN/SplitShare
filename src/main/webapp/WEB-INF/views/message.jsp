@@ -1,203 +1,178 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messenger</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Left sidebar (friends list) */
-        .friends-list {
-            width: 30%;
-            background-color: #f8f8f8;
-            border-right: 1px solid #ddd;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .friend {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #ddd;
-            transition: background-color 0.2s;
-        }
-
-        .friend:hover {
-            background-color: #f1f1f1;
-        }
-
-        .friend img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .friend-info {
-            flex-grow: 1;
-        }
-
-        .friend-name {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .friend-last-message {
-            font-size: 14px;
-            color: gray;
-        }
-
-        /* Chat window */
-        .chat-window {
-            width: 70%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-header {
-            padding: 10px;
-            background-color: #f8f8f8;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .chat-messages {
-            flex-grow: 1;
-            padding: 10px;
-            overflow-y: auto;
-            background-color: #ffffff;
-        }
-
-        .message {
-            margin-bottom: 10px;
-        }
-
-        .message.sent {
-            text-align: right;
-        }
-
-        .message .message-content {
-            display: inline-block;
-            padding: 10px;
-            border-radius: 10px;
-            max-width: 60%;
-        }
-
-        .message.sent .message-content {
-            background-color: #dcf8c6;
-        }
-
-        .message.received .message-content {
-            background-color: #f1f1f1;
-        }
-
-        .chat-input {
-            display: flex;
-            padding: 10px;
-            border-top: 1px solid #ddd;
-            background-color: #f8f8f8;
-        }
-
-        .chat-input textarea {
-            flex-grow: 1;
-            resize: none;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .chat-input button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .chat-input button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="..\..\CSS\chat.css">
 </head>
 <body>
-    <!-- Left Sidebar: Friends List -->
-    <div class="friends-list">
-        <c:forEach var="friend" items="${friends}">
-            <div class="friend" onclick="openChat(${friend.id}, '${friend.name}')">
-                <img src="data:image/png;base64,${friend.base64photo}" alt="Profile">
-                <div class="friend-info">
-                    <div class="friend-name">${friend.name}</div>
-                    <div class="friend-last-message">${friend.lastMessage}</div>
+        <div class="messenger-container">
+            <!-- Left Sidebar -->
+            <div class="friends-list">
+                <h3>Your Friends</h3>
+                <ul>
+                    <c:forEach var="friend" items="${friends}">
+                        <li data-friend-id="${friend.id}">
+                            <img src="data:image/jpeg;base64,${friend.base64photo}" alt="Profile Picture" class="friend-photo">
+                            <div class="friend-info">
+                                <p class="friend-name">${friend.name}</p>
+                                <p class="last-message-content">
+                                    ${friend.lastMessage.content}
+                                </p>
+                            </div>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <h3>Chat</h3>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will be dynamically loaded here -->
+                </div>
+                <div class="chat-input">
+                    <textarea id="messageInput" placeholder="Type a message..."></textarea>
+                    <button onclick="sendMessage()">Send</button>
                 </div>
             </div>
-        </c:forEach>
-    </div>
-
-    <!-- Chat Window -->
-    <div class="chat-window">
-        <div class="chat-header" id="chat-header">Select a friend to start chatting</div>
-        <div class="chat-messages" id="chat-messages">
-            <!-- Chat messages will appear here -->
         </div>
-        <div class="chat-input">
-            <textarea id="message-input" placeholder="Type a message..."></textarea>
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
 
+        <template id="message-template">
+            <div class="message-wrapper">
+                <div class="message">
+                    <p class="message-content"></p>
+                </div>
+            </div>
+        </template>
     <script>
+        const userId = "${sessionScope.account.id}";
+        // const socket = new WebSocket("ws://localhost:8085/chat/"+userId);
+
+        const socketUrl = "ws://localhost:8085/chat/" +userId;
+        let socket = null;
         let selectedFriendId = null;
-        // Open chat for the selected friend
-        function openChat(friendId, friendName) {
-            selectedFriendId = friendId;
-            document.getElementById('chat-header').innerText = `Chat with ${friendName}`;
-            document.getElementById('chat-messages').innerHTML = ''; // Clear previous messages
-            fetchChatHistory(friendId);
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const defaultChatArea = `
+            <div class="default-icon">
+                <img class = "default-chat-photo" src="../../images/chat.png" alt="Chat Icon">
+                <p>Select a friend to start chatting</p>
+            </div>
+        `;
+
+        // Initialize default chat area
+        chatMessages.innerHTML = defaultChatArea;
+
+        // Function to initialize WebSocket connection
+        function initSocket() {
+            socket = new WebSocket(socketUrl);
+
+            socket.onopen = function () {
+                console.log("WebSocket connection established.");
+            };
+
+            socket.onmessage = function (event) {
+                const message = JSON.parse(event.data);
+                if (message.senderId === selectedFriendId || message.receiverId === selectedFriendId) {
+                    displayMessage(message, 'received');
+                }
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket connection closed. Reconnecting...");
+                setTimeout(initSocket, 3000); // Reconnect after 3 seconds
+            };
+
+            socket.onerror = function (error) {
+                console.error("WebSocket error:", error);
+            };
         }
 
-        // Fetch chat history via WebSocket or AJAX
-        function fetchChatHistory(friendId) {
-            stompClient.send('/app/fetchChatHistory', {}, JSON.stringify({ receiverId: friendId }));
-        }
+        // Initialize WebSocket connection
+        initSocket();
 
-        // Display fetched messages
-        function displayChatHistory(messages) {
-            const chatMessages = document.getElementById('chat-messages');
-            chatMessages.innerHTML = '';
-            messages.forEach(message => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${message.senderId === selectedFriendId ? 'received' : 'sent'}`;
-                messageDiv.innerHTML = `<div class="message-content">${message.content}</div>`;
-                chatMessages.appendChild(messageDiv);
-            });
-        }
-
-        // Send a new message
+        // Function to send a message
         function sendMessage() {
-            const messageInput = document.getElementById('message-input');
-            const content = messageInput.value;
-            if (!content.trim() || !selectedFriendId) return;
-
-            stompClient.send('/app/sendMessage', {}, JSON.stringify({
-                senderId: loggedInUserId, // Replace with logged-in user ID
-                receiverId: selectedFriendId,
-                content: content
-            }));
-            messageInput.value = ''; // Clear input field
+            const content = messageInput.value.trim();
+            if (content && selectedFriendId) {
+                const message = { senderId: userId, receiverId: selectedFriendId, content: content, timestamp: new Date().toISOString() };
+                socket.send(JSON.stringify(message));
+                displayMessage(message, 'sent');
+                messageInput.value = '';
+            } else {
+                alert("Please select a friend to send a message.");
+            }
         }
+
+        // Function to display a message in the chat area
+        function displayMessage(message, type) {
+            try {
+
+                // Parse the message if it's a string
+                const parsedMessage = typeof message === 'string' ? JSON.parse(message) : message;
+
+                const template = document.getElementById('message-template');
+                const messageNode = template.content.cloneNode(true);
+
+                // Create a wrapper div for the message
+                const messageWrapper = messageNode.querySelector('.message-wrapper');
+                const messageContent = messageNode.querySelector('.message-content');
+
+                // Add content to the message
+                messageWrapper.classList.add(type);
+                messageContent.textContent = parsedMessage.content || "No content";
+                console.log("message type: "+type);
+
+                chatMessages.appendChild(messageNode);
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error("Error displaying message:", error);
+            }
+        }
+
+
+        // Function to load chat history when a friend is selected
+        function loadChatHistory(friendId) {
+            if (!friendId) {
+                console.error("No friendId provided to load chat history.");
+                return;
+            }
+            selectedFriendId = friendId;
+            console.log("fetching chat history for..."+selectedFriendId);
+            // Clear existing messages
+            chatMessages.innerHTML = '';
+
+            // Fetch chat history via AJAX
+            fetch(`/fetchChatHistory/`+friendId)
+                .then(response => response.json())
+                .then(messages => {
+                    messages.forEach(message => {
+                        const type = message.senderId === userId ? 'sent' : 'received';
+                        displayMessage(message, type);
+                    });
+                })
+                .catch(error => console.error("Error loading chat history:", error));
+        }
+
+        // Event listener for selecting a friend
+        document.querySelectorAll('.friends-list li').forEach(friend => {
+            friend.addEventListener('click', function () {
+                const friendId = this.dataset.friendId; // Assuming each friend li has a `data-friend-id` attribute
+                document.querySelectorAll('.friends-list li').forEach(li => li.classList.remove('active'));
+                this.classList.add('active');
+                loadChatHistory(friendId);
+            });
+        });
+
+        // Display default chat area if no friend is selected
+        if (!selectedFriendId) {
+            chatMessages.innerHTML = defaultChatArea;
+        }
+
     </script>
 </body>
 </html>

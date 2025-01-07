@@ -249,7 +249,7 @@
             <!-- Navigation Links -->
             <ul class="list-group mt-4">
                 <li class="list-group-item"><a href="/profile/${sessionScope.account.id}">Profile</a></li>
-                <li class="list-group-item"><a href="/chats">Chats</a></li>
+                <li class="list-group-item"><a href="/chat">Chats</a></li>
                 <li class="list-group-item"><a href="/friends">Friends</a></li>
                 <li class="list-group-item"><a href="/sentRequests"> Sent Requests</a></li>
                 <li class="list-group-item"><a href="/ledger">
